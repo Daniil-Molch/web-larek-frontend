@@ -1,4 +1,4 @@
-import { Product } from './components/base/types';
+import { Product } from './types/index';
 import { LarekApi } from './components/larek-api';
 import './scss/styles.scss';
 import { CDN_URL } from './utils/constants';

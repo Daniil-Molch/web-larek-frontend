@@ -16,7 +16,7 @@
 - src/styles/styles.scss — корневой файл стилей
 - src/utils/constants.ts — файл с константами
 - src/utils/utils.ts — файл с утилитами
-
+- src/components/larek-api.ts — файл с api
 ## Установка и запуск
 
 Для установки и запуска проекта необходимо выполнить команды
@@ -44,9 +44,23 @@ npm run build
 ```
 yarn build
 ```
+## Скриншоты
+![alt text](image.png)
 
 ## Архитектура
 
+## Паттерн проектирования MVP
+
+Для реализации был выбран паттерн проектирования. Как работает MVP:
+- Вид строит интерфейс и добавляет в него данные из модели.
+- Пользователь видит информацию и взаимодействует с интерфейсом.
+- Вид перехватывает события и передаёт (делегирует) их представителю.
+- Представитель обрабатывает данные (не всегда) и передаёт их модели.
+- Модель выполняет какие-то операции и обновляется (меняет те или иные свойства).
+- Представитель получает обновлённую модель и передаёт её виду.
+- Вид строит интерфейс с новыми данными.
+
+## All elements page
 ДАННЫЕ:
 -Название Товара
 -Описание Товара
@@ -76,28 +90,48 @@ yarn build
 -Очищать корзину
 -Получить список
 
-# метод
+## Типы
+Вcе типы описаны в файле ./src/types/index.ts
 
-makePurchase purchase отправлять данные на сервер в файл larek api метод api
 
 # Классы
 
 ## Класс Template
 
-Класс темплейт имплементирует общую логику для шаблонных элементов и от него наследуются конкретные шаблонные элементы
-card template
+Абстраткный класс темплейт имплементирует общую логику для шаблонных элементов и от него наследуются конкретные шаблонные элементы card template:
+- Содержит constructor(id: string) 
+- Содердит метод render(props:P)
+- содержит защищенный абстрактный метод _render(element)
 
 ## Класс EventEmitter
 
 Базовый класс, центральный брокер событий. Позволяет компонентам подписываться на события и реагировать на них
-
+- Содержит constructor
+- Имплементирует events
+- on / off подписаться и отписаться от события 
 ## Класс Api
 
 Базовый класс - клиент для взаимодействия с внешними API и сервером. Содержит методы:
 
-## Класс Card
+- `class Api {
+  readonly baseUrl: string;
+  protected options: RequestInit;
+  constructor(baseUrl: string, options: RequestInit = {});
+  protected async handleResponse(response: Response): Promise<Partial<object>>;
+  async get(uri: string);
+  async post(uri: string, data: object);
+}`
+## Класс LarekApi
+-  содержит apiClient: Api;
+- содерджит constructor()
+- содержит async getProducts()
+- содержит async getProduct(id:string)
+
+## Класс ProductCard 
 
 Класс для создания карточки товара
+- class ProductCard extends Template<Product>
+- _render(card: HTMLElement, product: Product)
 
 ## Класс Form<T>
 
@@ -106,22 +140,29 @@ card template
 ## Класс Order
 
 Класс предназначен для выбора способа оплаты и ввода адреса доставки
-
+- constructor(name)
 ## Класс Contacts
 
 Класс предназначен для управления формой контактных данных пользователя
-
+-  constructor(container: HTMLFormElement, events: Events)
 ## Класс Basket
 
 Класс управляет отображением корзины
+- constructor()
+- set price(price: number)
+- set list(items: HTMLElement[])
+- refresh
 
 ## класс сохранения
 
 запоминать введенные данные при переходе между модальными окнами
 
-## Класс Modal
+## Класс Model
+  - // Принимает данные для хранения, эвент эмиттер
+  constructor(data,events) 
 
-Класс управления поведением модальных окон
+ -  // Вызывает эвент
+  emitChanges(event) {}
 
 ## Класс Success
 
