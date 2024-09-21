@@ -3,6 +3,13 @@ import { LarekApi } from './components/larek-api';
 import './scss/styles.scss';
 import { CDN_URL } from './utils/constants';
 import { cloneTemplate } from './utils/utils';
+import { EventEmitter } from './components/base/events';
+// const events = new EventEmitter();
+// onClick: () => {
+//     events.emit('modal:close')
+//     modal.close()
+//   }
+
 abstract class Template<P> {
 	template: HTMLTemplateElement;
 	constructor(id: string) {
