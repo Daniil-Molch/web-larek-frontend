@@ -109,13 +109,13 @@ Presenter - Presenter координирует работу и является 
 
 Содержит глобальные базовые модели данных с набором следующих методов:
 
-- initialOrder(){}
-- deleteOrder(){}
-- deleteBasket(){}
-- addBasket(){}
-- refresh(){}
-- addItem(){}
-- getFullPrice(){}
+- initialOrder(){} инициализация по новому заказу
+- deleteOrder(){} очистка полей заказа
+- deleteBasket(){} очистка корзины
+- addBasket(){} добавление в корзину
+- refresh(){} очищает очередь
+- addItem(){} передача ID товара
+- getFullPrice(){} получение финальной цены все заказа
 
 # View
 
@@ -124,9 +124,9 @@ Presenter - Presenter координирует работу и является 
 ## Класс Template
 
 Абстраткный класс темплейт имплементирует общую логику для шаблонных элементов и от него наследуются конкретные шаблонные элементы card template:
-
-- Содержит constructor(id: string)
-- Содердит метод render(props:P)
+содержит свойство template : HTMLTemplateElement;
+- Содержит constructor(id: string) получает id  на вход создает теплейт по поиску элемента по id 
+- Содердит метод render(props:P) обрабатывает пропс
 - содержит защищенный абстрактный метод \_render(element)
 
 ## Класс EventEmitter
@@ -135,11 +135,12 @@ Presenter - Presenter координирует работу и является 
 
 - Содержит constructor
 - Имплементирует events
-- on / off подписаться и отписаться от события
+- on / off позволяет подписаться и отписаться от события а также его вызвать
 
 ## Класс Api
 
 Базовый класс - клиент для взаимодействия с внешними API и сервером. Содержит методы:
+// метод для работы с запросами и овтетами конструткор обрабатыват запрос и возвращает данные
 
 - `class Api {
   readonly baseUrl: string;
@@ -152,6 +153,8 @@ Presenter - Presenter координирует работу и является 
 
 ## Класс LarekApi
 
+// конструтор создание apiClient на основе имеющегося API_URL содержит асинхронные методы дл получение всех элементов или конкртеного по его ID
+
 - содержит apiClient: Api;
 - содерджит constructor()
 - содержит async getProducts()
@@ -160,12 +163,18 @@ Presenter - Presenter координирует работу и является 
 ## Класс ProductCard
 
 Класс для создания карточки товара
+// класс ProductCard наследует Template. его свойства равны информации о товаре каждого элемента , заголовок, изображение, цена, категория, также формирует каталог карточек
 
+- const title = card.querySelector('.card\_\_title');
+- const image = card.querySelector('.card\_\_image') as HTMLImageElement;
+- const cardPrice = card.querySelector('.card\_\_price');
+- const cardCategory = card.querySelector('.card\_\_category');
 - class ProductCard extends Template<Product>
 - \_render(card: HTMLElement, product: Product)
 
 ## Класс Form<T>
 
+// методы данного класса описывают ошибки валидации форм, а также информацию об успешной их отправке
 Класс для управления формами
 class Form<T>{
 constructor(container,events){ }
@@ -176,6 +185,7 @@ validValue(){}
 ## Класс Order
 
 Класс предназначен для выбора способа оплаты и ввода адреса доставки
+// объект заказа клиента
 
 - type Order={// Массив ID купленных товаров
   items: string[];
@@ -196,6 +206,7 @@ validValue(){}
 ## Класс Contacts
 
 Класс предназначен для управления формой контактных данных пользователя
+// констуктор принимает обратботчик и наследуемый элемент наследуется от Form поля email и phone
 
 - type contacts= {
   phone: string;
@@ -205,6 +216,7 @@ validValue(){}
 
 ## Класс Basket
 
+// содежит цену товара или всех товаров а также массив элементов
 Класс управляет отображением корзины
 
 - constructor()
@@ -222,6 +234,7 @@ validValue(){}
 
 ## Класс Success
 
+// при успешном оформлении заказы выводит окно с результатыми проведенной операции
 Класс отображения успешного завершения процесса оплаты.
 
 - type succsess= {
