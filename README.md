@@ -107,15 +107,24 @@ Presenter - Presenter координирует работу и является 
 
 # модель данных Model
 
+свойства:
+
+- products доступные товары
+- basket корзина
+- cardPreview? текущая октрытая карточка на preview
+- isloading во время загрузки
+- orderinfo состояние заказа
+
 Содержит глобальные базовые модели данных с набором следующих методов:
 
-- initialOrder(){} инициализация по новому заказу
-- deleteOrder(){} очистка полей заказа
-- deleteBasket(){} очистка корзины
-- addBasket(){} добавление в корзину
-- refresh(){} очищает очередь
+-
+- initialOrder(){} инициализация нового заказа
+- deleteOrder(){} очистка полей заказа когла заканчивается оформление и оплата
+- deletefromBasket(){} очистка корзины
+- addTobasket(){} добавление в корзину
 - addItem(){} передача ID товара
-- getFullPrice(){} получение финальной цены все заказа
+- getTotal(){} получение финальной цены все заказа
+- get product(){} получить товары
 
 # View
 
@@ -125,7 +134,8 @@ Presenter - Presenter координирует работу и является 
 
 Абстраткный класс темплейт имплементирует общую логику для шаблонных элементов и от него наследуются конкретные шаблонные элементы card template:
 содержит свойство template : HTMLTemplateElement;
-- Содержит constructor(id: string) получает id  на вход создает теплейт по поиску элемента по id 
+
+- Содержит constructor(id: string) получает id на вход создает теплейт по поиску элемента по id
 - Содердит метод render(props:P) обрабатывает пропс
 - содержит защищенный абстрактный метод \_render(element)
 
@@ -157,8 +167,8 @@ Presenter - Presenter координирует работу и является 
 
 - содержит apiClient: Api;
 - содерджит constructor()
-- содержит async getProducts()
-- содержит async getProduct(id:string)
+- содержит async getProducts() возвращает все товары
+- содержит async getProduct(id:string) возвращает конткреный товар по его ID
 
 ## Класс ProductCard
 
@@ -219,10 +229,9 @@ validValue(){}
 // содежит цену товара или всех товаров а также массив элементов
 Класс управляет отображением корзины
 
-- constructor()
-- getFullPrice(price: number)
-- setList(items: HTMLElement[])
-- refresh
+- constructor() наследуется от modal
+- delteItem() удаляет по одному элементу из корзины при нажатии па мусорку
+- createOrder() -оформлеят заказа переводит на след окно
 
 ## Класс Model
 

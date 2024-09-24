@@ -1,6 +1,7 @@
+import { Product, ProductsResponse } from '../types';
 import { API_URL } from '../utils/constants';
 import { Api } from './base/api';
-import { Product, ProductsResponse } from './base/types';
+
 
 export class LarekApi {
 	apiClient: Api;

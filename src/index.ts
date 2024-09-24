@@ -1,23 +1,31 @@
-import { Product } from './types/index';
+import { Product } from './types';
 import { LarekApi } from './components/larek-api';
 import './scss/styles.scss';
 import { CDN_URL } from './utils/constants';
 import { cloneTemplate } from './utils/utils';
 import { EventEmitter } from './components/base/events';
-
-
-abstract class Template<P> {
-	template: HTMLTemplateElement;
-	constructor(id: string) {
-		this.template = document.getElementById(id) as HTMLTemplateElement;
-	}
-	render(props: P) {
-		const element = cloneTemplate(this.template);
-		this._render(element, props);
-		return element;
-	}
-	protected abstract _render(element: HTMLElement, props: P): void;
-}
+import { Modal } from './components/base/modal';
+import { Model } from './components/base/model';
+import { Template } from './components/base/template';
+import { Basket } from './components/base/basket';
+import { formatPrice } from './formatPrice';
+const eventEmitter = new EventEmitter();
+const model = new Model(eventEmitter);
+const basketCounter = document.querySelector('.header__basket-counter');
+const basket = new Basket('basket');
+const basketButton = document.querySelector('.header__basket');
+basketButton.addEventListener('click', () => {
+	productModal.openModal(
+		basket.render({ price: model.getTotal(), products: model.basket })
+	);
+});
+eventEmitter.on('basket:change', (basket: Product[]) => {
+	basketCounter.textContent = basket.length.toString();
+});
+const productModal = new Modal(
+	document.getElementById('product-preview-class'),
+	eventEmitter
+);
 class ProductCard extends Template<Product> {
 	_render(card: HTMLElement, product: Product): void {
 		const title = card.querySelector('.card__title');
@@ -31,26 +39,44 @@ class ProductCard extends Template<Product> {
 		cardPrice.textContent = formatPrice(product.price);
 		image.src = CDN_URL + product.image;
 		title.textContent = product.title;
+		card.addEventListener('click', () => {
+			productModal.openModal(productPreviewCardTemplate.render(product));
+		});
 	}
 }
-const productCardTemplate=new ProductCard('card-catalog');
+class ProductPreviewCard extends Template<Product> {
+	_render(card: HTMLElement, product: Product): void {
+		const title = card.querySelector('.card__title');
+		const image = card.querySelector('.card__image') as HTMLImageElement;
+		const cardPrice = card.querySelector('.card__price');
+		const cardCategory = card.querySelector('.card__category');
+		const button = card.querySelector('.card__button');
+		const cardDescription = card.querySelector('.card__text');
+		cardCategory.textContent = product.category;
+		cardCategory.classList.add(
+			`card__category_${categoryToClass(product.category)}`
+		);
+		cardPrice.textContent = formatPrice(product.price);
+		image.src = CDN_URL + product.image;
+		title.textContent = product.title;
+		cardDescription.textContent = product.description;
+		button.addEventListener('click', () => {
+			model.addToBasket(product);
+		});
+	}
+}
+const productPreviewCardTemplate = new ProductPreviewCard('card-preview');
+const productCardTemplate = new ProductCard('card-catalog');
 (async () => {
 	//выводим карточки при загрузке
 	const api = new LarekApi();
 	const products = await api.getProducts();
 	const gallery = document.querySelector('.gallery');
 	for (const product of products) {
-        const card=productCardTemplate.render(product);
+		const card = productCardTemplate.render(product);
 		gallery.append(card);
 	}
 })();
-// format and category перенести в другой файл 
-function formatPrice(price: number | null) {
-	if (price == null) {
-		return 'Бесценно';
-	}
-	return `${price} синапсов`;
-}
 function categoryToClass(category: string) {
 	switch (category) {
 		case 'кнопка':
