@@ -17,8 +17,14 @@ export class Modal {
 		this.modalContent = this.element.querySelector('.modal__content');
 		this.buttonCard = this.element.querySelector('.modal__close');
 		this.buttonCard.addEventListener('click', this.closeModal.bind(this));
+		this.element.addEventListener('click', this.mouseEvent.bind(this));
+		
 	}
-
+	mouseEvent(ev:MouseEvent){
+		if(this.modalContent.contains(ev.target as HTMLElement)||
+		ev.target !== this.element){
+			this.closeModal.bind(this)
+		}}
 	openModal(...content:HTMLElement[]) {
 		this.element.classList.add('modal_active');
 		this.ev.emit('modal:open');

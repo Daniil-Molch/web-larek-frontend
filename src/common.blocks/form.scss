@@ -25,7 +25,7 @@
       outline-style: solid;
     }
 
-    &:invalid {
+    &[data-touched]:invalid {
       border-color: $error;
       outline-color: $error;
     }

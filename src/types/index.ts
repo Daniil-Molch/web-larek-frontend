@@ -48,3 +48,21 @@ export type Allfunc = {
 	refresh(): boolean;
 	resetSelected(): void;
 };
+export type MakeOrderInfo = {
+	address: string;
+	payment: 'card' | 'cash';
+};
+export type MakeOrderProps = {
+	onNext: (value: MakeOrderInfo) => void;
+};
+export type MakeOrder2Props = {
+	onNext: (value: MakeOrderInfo2) => void;
+};
+export type MakeOrderInfo2 = {
+	email: string;
+	phone: string;
+};
+
+export type MakeOrder3 = {
+	price: number;
+};
