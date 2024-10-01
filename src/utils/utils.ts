@@ -133,3 +133,10 @@ export function createElement<
     }
     return element;
 }
+//форматирование цены
+export function formatPrice(price: number | null) {
+	if (price == null) {
+		return 'Бесценно';
+	}
+	return `${price} синапсов`;
+}

@@ -52,10 +52,10 @@ export type MakeOrderInfo = {
 	address: string;
 	payment: 'card' | 'cash';
 };
-export type MakeOrderProps = {
+export type ModalOrderProps = {
 	onNext: (value: MakeOrderInfo) => void;
 };
-export type MakeOrder2Props = {
+export type ModalContactsProps = {
 	onNext: (value: MakeOrderInfo2) => void;
 };
 export type MakeOrderInfo2 = {
@@ -63,6 +63,12 @@ export type MakeOrderInfo2 = {
 	phone: string;
 };
 
-export type MakeOrder3 = {
-	price: number;
+export type BasketItemProps = {
+	product: Product;
+	onDelete: () => void;
+	index:number;
+};
+export type ModalSuccessProps = {
+	total: number;
+	onFinish: () => void;
 };

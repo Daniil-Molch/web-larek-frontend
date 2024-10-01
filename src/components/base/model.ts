@@ -20,7 +20,9 @@ export class Model {
 	setPayment(payment: string) {
 		this.payment = payment;
 	}
+
 	addToBasket(product: Product) {
+		//условие, добавляет карту продукта в корзину только в случае если она еще не был добавлена
 		if (this.basket.filter((item) => item.id === product.id).length) return;
 		this.basket.push(product);
 		this.ee.emit('basket:change', this.basket);
@@ -34,18 +36,19 @@ export class Model {
 	setEmail(s: string) {
 		this.email = s;
 	}
-	async createOrder() {
-		const response = await api.createOrder({
+	getOrderInfo() {
+		return {
 			payment: this.payment,
 			email: this.email,
 			phone: this.phone,
 			address: this.address,
 			total: this.getTotal(),
 			items: this.basket.map((item) => item.id),
-		});
+		};
+	}
+	clearBasket() {
 		this.basket = [];
 		this.ee.emit('basket:change', this.basket);
-		return response;
 	}
 
 	deleteFromBasket(id: string) {

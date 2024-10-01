@@ -1,24 +1,28 @@
 import { cloneTemplate } from '../../utils/utils';
 
-export abstract class Template<P> {
-	template: HTMLTemplateElement;
-	constructor(id: string) {
-		this.template = document.getElementById(id) as HTMLTemplateElement;
+export abstract class Template<P, R = never> {
+	static templateId: string;
+	element: HTMLElement;
+	props: P;
+	constructor(props: P) {
+		const templateId = (this.constructor as typeof Template).templateId;
+		const template = document.getElementById(templateId) as HTMLTemplateElement;
+		this.element = cloneTemplate(template);
+		this.props = props;
 	}
-	lastProps: P | null;
-	lastElement: HTMLElement | null;
-	update(lastProps: P) {
-		const lastElement = this.lastElement;
-		if(!lastElement)return;
-		const newElement = this.render(lastProps);
-		lastElement.replaceWith(newElement);
+	abstract render(renderProps: R): HTMLElement;
+	defaultRender() {
+		return this.element;
 	}
-	render(props: P) {
-		// обертка для _render
-		const element = cloneTemplate(this.template);
-		this._render(element, props);
-		this.lastElement = element;
-		return element;
-	}
-	protected abstract _render(element: HTMLElement, props: P): void; //
+	// update(lastProps: P) {
+	// 	const lastElement = this.lastElement;
+	// 	if(!lastElement)return;
+	// 	const newElement = this.render(lastProps);
+	// 	lastElement.replaceWith(newElement);
+	// }
+	// // обертка для _render
+	// const element = cloneTemplate(this.template);
+	// this._render(element, props);
+	// this.lastElement = element;
+	// return element;
 }
