@@ -1,20 +1,23 @@
 import { ModalSuccessProps } from "../../types";
 import { Template } from "./template";
 
+type RenderProp={
+	total:number;
+}
 
-
-export class ModalSuccsess extends Template<ModalSuccessProps> {
-	render() {
+export class ModalSuccsess extends Template<ModalSuccessProps,RenderProp> {
+	description: HTMLElement;
+	render({total}:RenderProp) {
+		this.description.textContent = 'Списано ' + total + ' Синапсов';
 		return this.element;
 	}
 	static templateId = 'success';
 	constructor(props: ModalSuccessProps) {
 		super(props);
 		const button = this.element.querySelector('button');
-		const description = this.element.querySelector(
+		this.description = this.element.querySelector(
 			'.order-success__description'
 		);
-		description.textContent = 'Списано ' + props.total + ' Синапсов';
 		button.addEventListener('click', () => {
 			props.onFinish();
 		});

@@ -69,6 +69,5 @@ export type BasketItemProps = {
 	index:number;
 };
 export type ModalSuccessProps = {
-	total: number;
 	onFinish: () => void;
 };

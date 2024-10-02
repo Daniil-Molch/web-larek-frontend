@@ -4,10 +4,8 @@ import './scss/styles.scss';
 import { EventEmitter } from './components/base/events';
 import { Modal } from './components/base/modal';
 import { Model } from './components/base/model';
-import { Basket } from './components/basket';
-import {
-	ModalOrder,
-} from './components/base/make-order';
+import { Basket, BasketItem } from './components/basket';
+import { ModalOrder } from './components/base/make-order';
 import { ModalContacts } from './components/base/ModalContacts';
 import { ModalSuccsess } from './components/base/ModalSuccsess';
 import { ProductCard } from './components/ProductCard';
@@ -20,52 +18,63 @@ const basketButton = document.querySelector('.header__basket');
 const onContactsSubmit = (orderInfo: any) => {
 	model.setEmail(orderInfo.email);
 	model.setPhone(orderInfo.phone);
-	api.createOrder(model.getOrderInfo()).then((response) => {
-		model.clearBasket();
-		onOrderSuccess(response);
-	});
+	api
+		.createOrder(model.getOrderInfo())
+		.then((response) => {
+			model.clearBasket();
+			onOrderSuccess(response);
+		})
+		.catch((error) => {
+			//у нас нет экрана ошибки , поэтому отобраажем ошибку в консоли
+			console.error(error);
+		});
 };
+const modalSuccess = new ModalSuccsess({
+	onFinish: () => {
+		modal.closeModal();
+	},
+});
 const onOrderSuccess = (response: any) => {
-	const modalSuccess = new ModalSuccsess({
-		total: response.total,
-		onFinish: () => {
-			modal.closeModal();
-		},
-	});
-	modal.openModal(modalSuccess.render());
+	modal.openModal(modalSuccess.render({ total: response.total }));
 };
+const modalContacts = new ModalContacts({
+	onNext: onContactsSubmit,
+});
 const onAddressSubmit: ModalOrderProps['onNext'] = (orderInfo) => {
 	model.setAdress(orderInfo.address);
 	model.setPayment(orderInfo.payment);
-	const modalContacts = new ModalContacts({
-		onNext: onContactsSubmit,
-	});
 	modal.openModal(modalContacts.render());
 };
+const makeBasketChildren = () => {
+	const children = model.basket.map((product, index) => {
+		const basketItem = new BasketItem({
+			index: index + 1,
+			product,
+			onDelete: () => model.deleteFromBasket(product.id),
+		});
+		return basketItem.render();
+	});
+	return children;
+};
+const modalOrder = new ModalOrder({
+	onNext: onAddressSubmit,
+});
 const makebasketProps = () => ({
 	price: model.getTotal(),
-	products: model.basket,
+	children: makeBasketChildren(),
 	onProductDelete: (id: string) => {
 		model.deleteFromBasket(id);
 	},
 	onCreateOrder: () => {
-		const modalOrder = new ModalOrder({
-			onNext: onAddressSubmit,
-		});
 		modal.openModal(modalOrder.render());
 	},
 });
+const basket = new Basket(makebasketProps());
+const listener = () => {
+	basket.update({ children: makeBasketChildren(), total: model.getTotal() });
+};
+eventEmitter.on('basket:change', listener);
 basketButton.addEventListener('click', () => {
-	const basket = new Basket(makebasketProps());
-	const listener = () => {
-		basket.update(model.basket);
-	};
-	eventEmitter.on('basket:change', listener);
-	const listener2 = () => {
-		eventEmitter.off('basket:change', listener);
-		eventEmitter.off('modal:close', listener2);
-	};
-	eventEmitter.on('modal:close', listener2);
 	modal.openModal(basket.render());
 });
 eventEmitter.on('basket:change', (basketProducts: Product[]) => {

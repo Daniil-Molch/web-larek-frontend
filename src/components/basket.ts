@@ -1,15 +1,15 @@
-
 import { BasketItemProps, Product } from '../types';
 import { formatPrice } from '../utils/utils';
 import { Template } from './base/template';
 type BasketProps = {
-	products: Product[];
+	children:HTMLElement[];
 	price: number;
 	onCreateOrder: () => void;
 	onProductDelete: (id: string) => void;
 };
 
 export class Basket extends Template<BasketProps> {
+	price: any;
 	render() {
 		return this.element;
 	}
@@ -18,32 +18,23 @@ export class Basket extends Template<BasketProps> {
 	constructor(props: BasketProps) {
 		super(props);
 		this.orderList = this.element.querySelector('.basket__list');
-		const price = this.element.querySelector('.basket__price');
+		this.price = this.element.querySelector('.basket__price');
 		const makeOrderButton = this.element.querySelector(
 			'.basket__button'
 		) as HTMLButtonElement;
-		price.textContent = formatPrice(props.price);
 		makeOrderButton.addEventListener('click', () => {
 			props.onCreateOrder();
 		});
-		this.update(props.products);
+		this.update({total:props.price,children:props.children});
 	}
 	protected _render(element: HTMLElement, props: BasketProps): void {}
-	update(products: Product[]) {
-		this.orderList.replaceChildren(
-			...products.map((product,index) => {
-				const basketItem = new BasketItem({
-					index:index+1,
-					product,
-					onDelete: () => this.props.onProductDelete(product.id),
-				});
-				return basketItem.render();
-			})
-		);
+	update({children,total}:{children: HTMLElement[],total:number}) {
+		this.orderList.replaceChildren(...children);
+		this.price.textContent = formatPrice(total);
 	}
 }
 
-class BasketItem extends Template<BasketItemProps> {
+export class BasketItem extends Template<BasketItemProps> {
 	render() {
 		return this.element;
 	}
@@ -58,9 +49,7 @@ class BasketItem extends Template<BasketItemProps> {
 		buttonDelete.addEventListener('click', () => {
 			this.props.onDelete();
 		});
-		const el= this.element.querySelector(".basket__item-index");
-		el.textContent=props.index.toString();
-
+		const el = this.element.querySelector('.basket__item-index');
+		el.textContent = props.index.toString();
 	}
-
 }
